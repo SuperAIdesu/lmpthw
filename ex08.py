@@ -1,12 +1,17 @@
 import argparse
+import sys
 
 parser = argparse.ArgumentParser(description="A replica of GNU *cut*")
 parser.add_argument("-d", "--delimiter", default="\t")
 parser.add_argument("-f", "--fields")
-parser.add_argument("file")
+parser.add_argument("file", default='-', nargs='?')
 args = parser.parse_args()
 
-fileobj = open(args.file, "r")
+if args.file == '-':
+    fileobj = sys.stdin
+else:
+    fileobj = open(args.file, "r")
+
 startnum = int(args.fields.split("-")[0])
 endnum = int(args.fields.split("-")[1])
 for line in fileobj:

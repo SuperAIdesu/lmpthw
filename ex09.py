@@ -7,7 +7,7 @@ def argproc():
     parser = argparse.ArgumentParser(
             description="A degraded replica of GNU *sed*, only s expression")
     parser.add_argument("pattern")
-    parser.add_argument("file")
+    parser.add_argument("file", default='-', nargs='?')
     return parser.parse_args()
 
 
@@ -23,7 +23,10 @@ def sed_s(slicedcommand, fileobj):
 
 
 args = argproc()
-fileobj = open(args.file, "r")
+if args.file == '-':
+    fileobj = sys.stdin
+else:
+    fileobj = open(args.file, "r")
 slicedcommand = args.pattern.split('/')
 
 if slicedcommand[0] == 's':

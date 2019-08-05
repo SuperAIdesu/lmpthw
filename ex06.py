@@ -43,3 +43,4 @@ def execarg(args, file):
 
 # print(args.dir[0]+"*")
 findfile(args)
+sys.exit(0)
