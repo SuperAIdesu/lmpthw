@@ -1,0 +1,148 @@
+class DoubleLinkedListNode(object):
+
+    def __init__(self, value, nxt, prev):
+        self.value = value
+        self.next = nxt
+        self.prev = prev
+
+    def __repr__(self):
+        nval = self.next and self.next.value or None
+        pval = self.prev and self.prev.value or None
+        return f"[{self.value}, {repr(nval)}, {repr(pval)}]"
+
+
+class DoubleLinkedList(object):
+
+    def __init__(self):
+        self.begin = None
+        self.end = None
+
+    def push(self, obj):
+        """将新的值附加到链表尾部。"""
+        newnode = DoubleLinkedListNode(obj, None, self.end)
+        if self.end is not None:
+            self.end.next = newnode
+        else:
+            self.begin = newnode
+        self.end = newnode
+
+    def pop(self):
+        """移除最后一个元素并返回它。"""
+        if self.begin is None:  # zero element
+            return None
+
+        lastnode = self.end
+        node = self.begin
+
+        if node.next is None:  # 1 element
+            self.begin = None
+            self.end = None
+            return lastnode.value
+
+        self.end = lastnode.prev
+        self.end.next = None
+        return lastnode.value
+
+    def shift(self, obj):
+        """将新的值附加到链表头部。"""
+        newnode = DoubleLinkedListNode(obj, self.begin, None)
+        if newnode.next is None:  # 1 element
+            self.end = newnode
+            self.begin = newnode
+            return
+        self.begin.prev = newnode
+        self.begin = newnode
+
+    def unshift(self):
+        """移除第一个元素并返回它。"""
+        if self.begin is None:
+            return None
+        firstnode = self.begin
+        self.begin = firstnode.next
+        if self.begin is not None:
+            self.begin.prev = None
+        return firstnode.value
+
+    def detach_node(self, node):
+        """你有时需要这个操作，但是多数都在 remove() 里面。它应该接受一个节点，将其从链表分离，无论节点是否在头部、尾部还是在中间。"""
+        if self.begin == node:
+            node.next.prev = None
+            self.begin = node.next
+            return
+        if self.end == node:
+            node.prev.next = None
+            self.end = node.prev
+            return
+
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def remove(self, obj):
+        """寻找匹配的元素并从中移除。"""
+        if self.begin is None:  # 0 element
+            return None
+        if self.begin == self.end:  # 1 element
+            if self.begin.value == obj:
+                self.begin = None
+                self.end = None
+                return 0
+            return None
+
+        node = self.begin
+        i = 0
+        while node is not None:
+            if node.value == obj:
+                self.detach_node(node)
+                return i
+            if node.next is None:
+                return None
+            node = node.next
+            i = i+1
+
+    def first(self):
+        """返回第一个元素的*引用*，不要移除。"""
+        if self.begin is None:
+            return None
+        return self.begin.value
+
+    def last(self):
+        """返回最后一个元素的*引用*，不要移除。"""
+        if self.end is None:
+            return None
+        return self.end.value
+
+    def count(self):
+        """计算链表中的元素数量。"""
+        node = self.begin
+        i = 0
+        if node is None:
+            return 0
+        while node is not None:
+            node = node.next
+            i = i+1
+        return i
+
+    def get(self, index):
+        """获取下标处的值。"""
+        if self.begin is None:
+            return None
+        i = 0
+        node = self.begin
+        while i < index:
+            node = node.next
+            i = i+1
+            if node is None:
+                return None
+        return node.value
+
+    def dump(self, mark):
+        """转储链表内容的调试函数。"""
+        print(mark, end=' ')
+        if self.begin is None:
+            print('Empty')
+            return
+        node = self.begin
+        while node.next is not None:
+            print(node.value, end=' ')
+            node = node.next
+        print(node.value)
